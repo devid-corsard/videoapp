@@ -18,32 +18,51 @@ const tUser3 = {
   password: '123456',
 };
 const tUser1Video1 = {
-  title: 'new test1 video 1',
+  title: 'new video by user1',
   desc: 'test1',
   imgUrl: 'test1',
+  videoUrl: 'test1',
+  tags: ['js', 'c++'],
+};
+const tUser2Video1 = {
+  title: 'new video by user2',
+  desc: 'test1',
+  imgUrl: 'test1',
+  videoUrl: 'test1',
+  tags: ['c++'],
+};
+const tUser3Video1 = {
+  title: 'new video by user3',
+  desc: 'test1',
+  imgUrl: 'test1',
+  tags: ['js'],
   videoUrl: 'test1',
 };
 
 describe('/api/auth', () => {
-  it('Should create 1st user', async () => {
+  it('Should create 3 test users', async () => {
     await request(app)
       .post('/api/auth/signup')
       .send(tUser1)
       .expect(200, { message: 'User has been created' });
-  });
-
-  it('Should create 2nd user', async () => {
     await request(app)
       .post('/api/auth/signup')
       .send(tUser2)
       .expect(200, { message: 'User has been created' });
-  });
-
-  it('Should create 3rd user', async () => {
     await request(app)
       .post('/api/auth/signup')
       .send(tUser3)
       .expect(200, { message: 'User has been created' });
+  });
+
+  it('Should not create user with dublicating name', async () => {
+    await request(app)
+      .post('/api/auth/signup')
+      .send(tUser1)
+      .expect(400)
+      .expect((res) => {
+        expect(res.body.message).toEqual('Username is already in use.');
+      });
   });
 
   it('Should not sign in with invalid user name', async () => {
@@ -143,83 +162,42 @@ describe('/api/auth', () => {
       });
   });
 
-  it('Should subscribe user 1 to user 2 and user 3', async () => {
+  it('Should create 3 videos with correct data for each test user', async () => {
     await request(app)
-      .put('/api/users/sub/' + tUser2.id)
-      .set('Cookie', `access_token=${tUser1.cookies.access_token}`)
-      .expect(200, { message: 'Subscribtion succsessful!' });
-
-    await request(app)
-      .put('/api/users/sub/' + tUser3.id)
-      .set('Cookie', `access_token=${tUser1.cookies.access_token}`)
-      .expect(200, { message: 'Subscribtion succsessful!' });
-
-    await request(app)
-      .get('/api/users/find/' + tUser1.id)
-      .expect(200)
-      .expect((res) => {
-        expect(res.body.subscribedUsers).toEqual([tUser2.id, tUser3.id]);
-      });
-
-    await request(app)
-      .get('/api/users/find/' + tUser2.id)
-      .expect(200)
-      .expect((res) => {
-        expect(res.body.subscribers).toEqual(1);
-      });
-
-    await request(app)
-      .get('/api/users/find/' + tUser3.id)
-      .expect(200)
-      .expect((res) => {
-        expect(res.body.subscribers).toEqual(1);
-      });
-  });
-
-  it('Should unsubscribe user 1 from user 2 and user 3', async () => {
-    await request(app)
-      .put('/api/users/unsub/' + tUser2.id)
-      .set('Cookie', `access_token=${tUser1.cookies.access_token}`)
-      .expect(200, { message: 'Unsubscribtion succsessful!' });
-
-    await request(app)
-      .put('/api/users/unsub/' + tUser3.id)
-      .set('Cookie', `access_token=${tUser1.cookies.access_token}`)
-      .expect(200, { message: 'Unsubscribtion succsessful!' });
-
-    await request(app)
-      .get('/api/users/find/' + tUser1.id)
-      .expect(200)
-      .expect((res) => {
-        expect(res.body.subscribedUsers).toEqual([]);
-      });
-
-    await request(app)
-      .get('/api/users/find/' + tUser2.id)
-      .expect(200)
-      .expect((res) => {
-        expect(res.body.subscribers).toEqual(0);
-      });
-
-    await request(app)
-      .get('/api/users/find/' + tUser3.id)
-      .expect(200)
-      .expect((res) => {
-        expect(res.body.subscribers).toEqual(0);
-      });
-  });
-
-  it('Should create video with correct data of test user 1', async () => {
-    const res = await request(app)
       .post('/api/videos')
       .set('Cookie', `access_token=${tUser1.cookies.access_token}`)
       .send(tUser1Video1)
-      .expect(200);
+      .expect(200)
+      .expect((res) => {
+        tUser1Video1.id = res.body._id;
 
-    tUser1Video1.id = res.body._id;
+        expect(tUser1Video1.id).toBeTruthy();
+        expect(res.body.title).toEqual(tUser1Video1.title);
+      });
 
-    expect(tUser1Video1.id).toBeTruthy();
-    expect(res.body.title).toEqual(tUser1Video1.title);
+    await request(app)
+      .post('/api/videos')
+      .set('Cookie', `access_token=${tUser2.cookies.access_token}`)
+      .send(tUser2Video1)
+      .expect(200)
+      .expect((res) => {
+        tUser2Video1.id = res.body._id;
+
+        expect(tUser2Video1.id).toBeTruthy();
+        expect(res.body.title).toEqual(tUser2Video1.title);
+      });
+
+    await request(app)
+      .post('/api/videos')
+      .set('Cookie', `access_token=${tUser3.cookies.access_token}`)
+      .send(tUser3Video1)
+      .expect(200)
+      .expect((res) => {
+        tUser3Video1.id = res.body._id;
+
+        expect(tUser3Video1.id).toBeTruthy();
+        expect(res.body.title).toEqual(tUser3Video1.title);
+      });
   });
 
   it('Should not update video with invalid id', async () => {
@@ -308,28 +286,148 @@ describe('/api/auth', () => {
       });
   });
 
-  it('Should delete video1 of user1 with correct data', async () => {
+  it('Should subscribe user 1 to user 2 and user 3', async () => {
+    await request(app)
+      .put('/api/users/sub/' + tUser2.id)
+      .set('Cookie', `access_token=${tUser1.cookies.access_token}`)
+      .expect(200, { message: 'Subscribtion succsessful!' });
+
+    await request(app)
+      .put('/api/users/sub/' + tUser3.id)
+      .set('Cookie', `access_token=${tUser1.cookies.access_token}`)
+      .expect(200, { message: 'Subscribtion succsessful!' });
+
+    await request(app)
+      .get('/api/users/find/' + tUser1.id)
+      .expect(200)
+      .expect((res) => {
+        expect(res.body.subscribedUsers).toEqual([tUser2.id, tUser3.id]);
+      });
+
+    await request(app)
+      .get('/api/users/find/' + tUser2.id)
+      .expect(200)
+      .expect((res) => {
+        expect(res.body.subscribers).toEqual(1);
+      });
+
+    await request(app)
+      .get('/api/users/find/' + tUser3.id)
+      .expect(200)
+      .expect((res) => {
+        expect(res.body.subscribers).toEqual(1);
+      });
+  });
+
+  it('Should get videos from subscribed channels of user 1 sorted by date', async () => {
+    await request(app)
+      .get('/api/videos/sub')
+      .set('Cookie', `access_token=${tUser1.cookies.access_token}`)
+      .expect(200)
+      .expect((res) => {
+        expect(res.body.length).toBe(2);
+        expect(res.body[0].title).toBe(tUser3Video1.title);
+        expect(res.body[1].title).toBe(tUser2Video1.title);
+      });
+  });
+
+  it('Should unsubscribe user 1 from user 2 and user 3', async () => {
+    await request(app)
+      .put('/api/users/unsub/' + tUser2.id)
+      .set('Cookie', `access_token=${tUser1.cookies.access_token}`)
+      .expect(200, { message: 'Unsubscribtion succsessful!' });
+
+    await request(app)
+      .put('/api/users/unsub/' + tUser3.id)
+      .set('Cookie', `access_token=${tUser1.cookies.access_token}`)
+      .expect(200, { message: 'Unsubscribtion succsessful!' });
+
+    await request(app)
+      .get('/api/users/find/' + tUser1.id)
+      .expect(200)
+      .expect((res) => {
+        expect(res.body.subscribedUsers).toEqual([]);
+      });
+
+    await request(app)
+      .get('/api/users/find/' + tUser2.id)
+      .expect(200)
+      .expect((res) => {
+        expect(res.body.subscribers).toEqual(0);
+      });
+
+    await request(app)
+      .get('/api/users/find/' + tUser3.id)
+      .expect(200)
+      .expect((res) => {
+        expect(res.body.subscribers).toEqual(0);
+      });
+  });
+
+  it('Should get videos by tags', async () => {
+    await request(app)
+      .get('/api/videos/tags')
+      .query({ tags: 'js' })
+      .expect(200)
+      .expect((res) => {
+        expect(res.body.length).toBe(2);
+      });
+
+    await request(app)
+      .get('/api/videos/tags')
+      .query({ tags: 'js,c++' })
+      .expect(200)
+      .expect((res) => {
+        expect(res.body.length).toBe(3);
+      });
+  });
+
+  it('Should search videos by title', async () => {
+    await request(app)
+      .get('/api/videos/search')
+      .query({ q: 'new' })
+      .expect(200)
+      .expect((res) => {
+        expect(res.body.length).toBe(2);
+      });
+
+    await request(app)
+      .get('/api/videos/search')
+      .query({ q: 'video' })
+      .expect(200)
+      .expect((res) => {
+        expect(res.body.length).toBe(3);
+      });
+  });
+
+  it('Should delete  3 videos of test users with correct data', async () => {
     await request(app)
       .delete('/api/videos/' + tUser1Video1.id)
       .set('Cookie', `access_token=${tUser1.cookies.access_token}`)
       .expect(200, { message: 'Video has been deleted.' });
+
+    await request(app)
+      .delete('/api/videos/' + tUser2Video1.id)
+      .set('Cookie', `access_token=${tUser2.cookies.access_token}`)
+      .expect(200, { message: 'Video has been deleted.' });
+
+    await request(app)
+      .delete('/api/videos/' + tUser3Video1.id)
+      .set('Cookie', `access_token=${tUser3.cookies.access_token}`)
+      .expect(200, { message: 'Video has been deleted.' });
   });
 
-  it('Should delete user1 with correct id and token', async () => {
+  it('Should delete 3 test users with correct id and token', async () => {
     await request(app)
       .delete('/api/users/' + tUser1.id)
       .set('Cookie', `access_token=${tUser1.cookies.access_token}`)
       .expect(200, { message: 'User has been deleted' });
-  });
 
-  it('Should delete user2 with correct id and token', async () => {
     await request(app)
       .delete('/api/users/' + tUser2.id)
       .set('Cookie', `access_token=${tUser2.cookies.access_token}`)
       .expect(200, { message: 'User has been deleted' });
-  });
 
-  it('Should delete user3 with correct id and token', async () => {
     await request(app)
       .delete('/api/users/' + tUser3.id)
       .set('Cookie', `access_token=${tUser3.cookies.access_token}`)

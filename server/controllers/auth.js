@@ -3,10 +3,13 @@ import User from '../models/User.js';
 import bcrypt from 'bcryptjs';
 import { createError } from '../error.js';
 import jwt from 'jsonwebtoken';
-import fs from 'fs';
 
 /** Sign up with name, email and password */
 export const signup = async (req, res, next) => {
+  const isExist = await User.findOne({ name: req.body.name });
+
+  if (isExist) return next(createError(400, 'Username is already in use.'));
+
   try {
     const salt = bcrypt.genSaltSync(10);
     const hash = bcrypt.hashSync(req.body.password, salt);
