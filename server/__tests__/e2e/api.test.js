@@ -400,6 +400,56 @@ describe('/api/auth', () => {
       });
   });
 
+  it('Should create 3 new comments', async () => {
+    const comment1 = {
+      desc: 'first comment',
+      videoId: tUser1Video1.id,
+    };
+    const comment2 = {
+      desc: 'second comment',
+      videoId: tUser1Video1.id,
+    };
+    const comment3 = {
+      desc: 'third comment',
+      videoId: tUser1Video1.id,
+    };
+    await request(app)
+      .post('/api/comments')
+      .set('Cookie', `access_token=${tUser1.cookies.access_token}`)
+      .send(comment1)
+      .expect(200)
+      .expect((res) => {
+        expect(res.body.desc).toBe(comment1.desc);
+      });
+
+    await request(app)
+      .post('/api/comments')
+      .set('Cookie', `access_token=${tUser1.cookies.access_token}`)
+      .send(comment2)
+      .expect(200)
+      .expect((res) => {
+        expect(res.body.desc).toBe(comment2.desc);
+      });
+
+    await request(app)
+      .post('/api/comments')
+      .set('Cookie', `access_token=${tUser1.cookies.access_token}`)
+      .send(comment3)
+      .expect(200)
+      .expect((res) => {
+        expect(res.body.desc).toBe(comment3.desc);
+      });
+
+    await request(app)
+      .get('/api/comments/' + tUser1Video1.id)
+      .expect(200)
+      .expect((res) => {
+        expect(res.body[0].desc).toBe(comment1.desc);
+        expect(res.body[1].desc).toBe(comment2.desc);
+        expect(res.body[2].desc).toBe(comment3.desc);
+      });
+  });
+
   it('Should delete  3 videos of test users with correct data', async () => {
     await request(app)
       .delete('/api/videos/' + tUser1Video1.id)

@@ -1,6 +1,14 @@
 import { Router } from 'express';
-import {} from '../controllers/comment.js';
+import {
+  addComment,
+  deleteComment,
+  getComments,
+} from '../controllers/comment.js';
+import { verifyToken } from '../verifyToken.js';
 
 const router = Router();
+router.post('/', verifyToken, addComment);
+router.delete('/:id', verifyToken, deleteComment);
+router.get('/:videoId', getComments);
 
 export default router;
