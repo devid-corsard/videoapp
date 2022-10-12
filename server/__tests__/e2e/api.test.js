@@ -47,7 +47,8 @@ const comment2 = {
 const comment3 = {
   desc: 'third comment',
 };
-describe('/api/auth', () => {
+
+describe('api tests', () => {
   it('Should create 3 test users', async () => {
     await request(app)
       .post('/api/auth/signup')
@@ -453,34 +454,6 @@ describe('/api/auth', () => {
       });
   });
 
-  it('Should delete 3 comments', async () => {
-    await request(app)
-      .delete('/api/comments/' + comment1.id)
-      .set('Cookie', `access_token=${tUser1.cookies.access_token}`)
-      .expect(200, { message: 'Comment deleted!' });
-
-    await request(app)
-      .delete('/api/comments/' + comment2.id)
-      .set('Cookie', `access_token=${tUser1.cookies.access_token}`)
-      .expect(200, { message: 'Comment deleted!' });
-
-    await request(app)
-      .get('/api/comments/' + tUser1Video1.id)
-      .expect(200)
-      .expect((res) => {
-        expect(res.body[0].desc).toBe(comment3.desc);
-      });
-
-    await request(app)
-      .delete('/api/comments/' + comment3.id)
-      .set('Cookie', `access_token=${tUser1.cookies.access_token}`)
-      .expect(200, { message: 'Comment deleted!' });
-
-    await request(app)
-      .get('/api/comments/' + tUser1Video1.id)
-      .expect(200, []);
-  });
-
   it('Should like and dislike a video', async () => {
     // like
     await request(app)
@@ -516,6 +489,34 @@ describe('/api/auth', () => {
       .expect((res) => {
         expect(res.body.dislikes).toEqual([tUser1.id, tUser2.id]);
       });
+  });
+
+  it('Should delete 3 comments', async () => {
+    await request(app)
+      .delete('/api/comments/' + comment1.id)
+      .set('Cookie', `access_token=${tUser1.cookies.access_token}`)
+      .expect(200, { message: 'Comment deleted!' });
+
+    await request(app)
+      .delete('/api/comments/' + comment2.id)
+      .set('Cookie', `access_token=${tUser1.cookies.access_token}`)
+      .expect(200, { message: 'Comment deleted!' });
+
+    await request(app)
+      .get('/api/comments/' + tUser1Video1.id)
+      .expect(200)
+      .expect((res) => {
+        expect(res.body[0].desc).toBe(comment3.desc);
+      });
+
+    await request(app)
+      .delete('/api/comments/' + comment3.id)
+      .set('Cookie', `access_token=${tUser1.cookies.access_token}`)
+      .expect(200, { message: 'Comment deleted!' });
+
+    await request(app)
+      .get('/api/comments/' + tUser1Video1.id)
+      .expect(200, []);
   });
 
   it('Should delete  3 videos of test users with correct data', async () => {

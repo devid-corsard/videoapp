@@ -18,6 +18,7 @@ import HelpOutlineOutlinedIcon from '@mui/icons-material/HelpOutlineOutlined';
 import DarkModeOutlinedIcon from '@mui/icons-material/DarkModeOutlined';
 import AccountCircleOutlinedIcon from '@mui/icons-material/AccountCircleOutlined';
 import { Link } from 'react-router-dom';
+import { useSelector } from 'react-redux';
 
 const Container = styled.div`
   flex: 1;
@@ -28,6 +29,7 @@ const Container = styled.div`
   position: sticky;
   top: 0;
 `;
+
 const Wrapper = styled.div`
   padding: 18px 26px;
 `;
@@ -54,11 +56,14 @@ const Item = styled.div`
     background-color: ${({ theme }) => theme.soft};
   }
 `;
+
 const Hr = styled.hr`
   margin: 15px 0px;
   border: 0.5px solid ${({ theme }) => theme.soft}; ;
 `;
+
 const Login = styled.div``;
+
 const Button = styled.button`
   padding: 5px 15px;
   background-color: transparent;
@@ -72,6 +77,7 @@ const Button = styled.button`
   align-items: center;
   gap: 5px;
 `;
+
 const Title = styled.h2`
   font-size: 14px;
   font-weight: 500;
@@ -80,6 +86,8 @@ const Title = styled.h2`
 `;
 
 const Menu = ({ darkMode, setDarkMode }) => {
+  const { currentUser } = useSelector((state) => state.user);
+
   return (
     <Container>
       <Wrapper>
@@ -93,14 +101,21 @@ const Menu = ({ darkMode, setDarkMode }) => {
           <HomeIcon />
           Home
         </Item>
-        <Item>
-          <ExploreOutlinedIcon />
-          Explore
-        </Item>
-        <Item>
-          <SubscriptionsOutlinedIcon />
-          Subscriptions
-        </Item>
+        <Link to="trends" style={{ textDecoration: 'none', color: 'inherit' }}>
+          <Item>
+            <ExploreOutlinedIcon />
+            Explore
+          </Item>
+        </Link>
+        <Link
+          to="subsciptions"
+          style={{ textDecoration: 'none', color: 'inherit' }}
+        >
+          <Item>
+            <SubscriptionsOutlinedIcon />
+            Subscriptions
+          </Item>
+        </Link>
         <Hr />
         <Item>
           <VideoLibraryOutlinedIcon />
@@ -111,16 +126,18 @@ const Menu = ({ darkMode, setDarkMode }) => {
           History
         </Item>
         <Hr />
-        <Login>
-          Sing in to like videos, comment and subscribe.
-          <Link to="signin" style={{ textDecoration: 'none' }}>
-            <Button>
-              <AccountCircleOutlinedIcon />
-              SIGN IN
-            </Button>
-          </Link>
-          <Hr />
-        </Login>
+        {!currentUser && (
+          <Login>
+            Sing in to like videos, comment and subscribe.
+            <Link to="signin" style={{ textDecoration: 'none' }}>
+              <Button>
+                <AccountCircleOutlinedIcon />
+                SIGN IN
+              </Button>
+            </Link>
+            <Hr />
+          </Login>
+        )}
         <Title>BEST OF DEVIDTUBE</Title>
         <Item>
           <LibraryMusicOutlinedIcon />

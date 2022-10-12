@@ -1,6 +1,8 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import styled from 'styled-components';
+import { format } from 'timeago.js';
+import axios from 'axios';
 
 const Container = styled.div`
   width: ${({ type }) => type !== 'small' && '340px'};
@@ -54,26 +56,28 @@ const Info = styled.div`
   color: ${({ theme }) => theme.textSoft};
 `;
 
-const Card = ({ type }) => {
+const Card = ({ type, video }) => {
+  const [channel, setChannel] = useState({});
+
+  useEffect(() => {
+    const fetchChannel = async () => {
+      const res = await axios.get(`/users/find/${video.userId}`);
+      setChannel(res.data);
+    };
+    fetchChannel();
+  }, [video.userId]);
   return (
     <Link to="/video/test" style={{ textDecoration: 'none' }}>
       <Container type={type}>
-        <Image
-          type={type}
-          src="https://i.ytimg.com/vi/8PbepDbZuq0/hq720.jpg?sqp=-oaymwEcCNAFEJQDSFXyq4qpAw4IARUAAIhCGAFwAcABBg==&rs=AOn4CLDLSY6X3dDIIlIbdh1pft8dnFBpew"
-        />
+        <Image type={type} src={video.imgUrl} />
         <Details type={type}>
-          <ChannelImage
-            type={type}
-            src="https://yt3.ggpht.com/hcGB-JGcd7qtdV4Z5bUXpT0khAWIn0RDmimZpCVN-IubWeDz9SYX8C9qYi1oRXq5tOZy2aim9yg=s176-c-k-c0x00ffffff-no-rj-mo"
-          />
+          <ChannelImage type={type} src={channel.img} />
           <Texts>
-            <Title type={type}>
-              LONG VIDEO TITLE LONG VIDEO TITLE LONG VIDEO TITLE LONG VIDEO
-              TITLE
-            </Title>
-            <ChannelName type={type}>Devid Channel</ChannelName>
-            <Info>72K views • 1 hour ago</Info>
+            <Title type={type}>{video.title}</Title>
+            <ChannelName type={type}>{channel.name}</ChannelName>
+            <Info>
+              {video.views} views • {format(video.createdAt)}
+            </Info>
           </Texts>
         </Details>
       </Container>
