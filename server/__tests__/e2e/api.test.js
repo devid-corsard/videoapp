@@ -38,7 +38,15 @@ const tUser3Video1 = {
   tags: ['js'],
   videoUrl: 'test1',
 };
-
+const comment1 = {
+  desc: 'first comment',
+};
+const comment2 = {
+  desc: 'second comment',
+};
+const comment3 = {
+  desc: 'third comment',
+};
 describe('/api/auth', () => {
   it('Should create 3 test users', async () => {
     await request(app)
@@ -401,24 +409,17 @@ describe('/api/auth', () => {
   });
 
   it('Should create 3 new comments', async () => {
-    const comment1 = {
-      desc: 'first comment',
-      videoId: tUser1Video1.id,
-    };
-    const comment2 = {
-      desc: 'second comment',
-      videoId: tUser1Video1.id,
-    };
-    const comment3 = {
-      desc: 'third comment',
-      videoId: tUser1Video1.id,
-    };
+    comment1.videoId = tUser1Video1.id;
+    comment2.videoId = tUser1Video1.id;
+    comment3.videoId = tUser1Video1.id;
+
     await request(app)
       .post('/api/comments')
       .set('Cookie', `access_token=${tUser1.cookies.access_token}`)
       .send(comment1)
       .expect(200)
       .expect((res) => {
+        comment1.id = res.body._id;
         expect(res.body.desc).toBe(comment1.desc);
       });
 
@@ -428,6 +429,7 @@ describe('/api/auth', () => {
       .send(comment2)
       .expect(200)
       .expect((res) => {
+        comment2.id = res.body._id;
         expect(res.body.desc).toBe(comment2.desc);
       });
 
@@ -437,6 +439,7 @@ describe('/api/auth', () => {
       .send(comment3)
       .expect(200)
       .expect((res) => {
+        comment3.id = res.body._id;
         expect(res.body.desc).toBe(comment3.desc);
       });
 
@@ -447,6 +450,71 @@ describe('/api/auth', () => {
         expect(res.body[0].desc).toBe(comment1.desc);
         expect(res.body[1].desc).toBe(comment2.desc);
         expect(res.body[2].desc).toBe(comment3.desc);
+      });
+  });
+
+  it('Should delete 3 comments', async () => {
+    await request(app)
+      .delete('/api/comments/' + comment1.id)
+      .set('Cookie', `access_token=${tUser1.cookies.access_token}`)
+      .expect(200, { message: 'Comment deleted!' });
+
+    await request(app)
+      .delete('/api/comments/' + comment2.id)
+      .set('Cookie', `access_token=${tUser1.cookies.access_token}`)
+      .expect(200, { message: 'Comment deleted!' });
+
+    await request(app)
+      .get('/api/comments/' + tUser1Video1.id)
+      .expect(200)
+      .expect((res) => {
+        expect(res.body[0].desc).toBe(comment3.desc);
+      });
+
+    await request(app)
+      .delete('/api/comments/' + comment3.id)
+      .set('Cookie', `access_token=${tUser1.cookies.access_token}`)
+      .expect(200, { message: 'Comment deleted!' });
+
+    await request(app)
+      .get('/api/comments/' + tUser1Video1.id)
+      .expect(200, []);
+  });
+
+  it('Should like and dislike a video', async () => {
+    // like
+    await request(app)
+      .put('/api/users/like/' + tUser1Video1.id)
+      .set('Cookie', `access_token=${tUser1.cookies.access_token}`)
+      .expect(200, { message: 'Video has been liked' });
+
+    await request(app)
+      .put('/api/users/like/' + tUser1Video1.id)
+      .set('Cookie', `access_token=${tUser2.cookies.access_token}`)
+      .expect(200, { message: 'Video has been liked' });
+
+    await request(app)
+      .get('/api/videos/find/' + tUser1Video1.id)
+      .expect(200)
+      .expect((res) => {
+        expect(res.body.likes).toEqual([tUser1.id, tUser2.id]);
+      });
+    // dislike
+    await request(app)
+      .put('/api/users/dislike/' + tUser2Video1.id)
+      .set('Cookie', `access_token=${tUser1.cookies.access_token}`)
+      .expect(200, { message: 'Video has been disliked' });
+
+    await request(app)
+      .put('/api/users/dislike/' + tUser2Video1.id)
+      .set('Cookie', `access_token=${tUser2.cookies.access_token}`)
+      .expect(200, { message: 'Video has been disliked' });
+
+    await request(app)
+      .get('/api/videos/find/' + tUser2Video1.id)
+      .expect(200)
+      .expect((res) => {
+        expect(res.body.dislikes).toEqual([tUser1.id, tUser2.id]);
       });
   });
 

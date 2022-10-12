@@ -6,7 +6,7 @@ export const addComment = async (req, res, next) => {
   const newComment = new Comment({ ...req.body, userId: req.user.id });
   try {
     const savedComment = await newComment.save();
-    res.status(200).send(savedComment);
+    res.status(200).json(savedComment);
   } catch (err) {
     next(err);
   }
@@ -15,11 +15,11 @@ export const addComment = async (req, res, next) => {
 export const deleteComment = async (req, res, next) => {
   try {
     const comment = await Comment.findById(req.params.id);
-    const video = await Video.findById(req.params.id);
+    const video = await Video.findById(comment.videoId); //(req.params.id);
 
     if (req.user.id === comment.userId || req.user.id === video.userId) {
       await Comment.findByIdAndDelete(req.params.id);
-      res.send(200).json({ message: 'Comment deleted!' });
+      res.status(200).json({ message: 'Comment deleted!' });
     } else {
       next(createError(403, 'You can delete only your comments!'));
     }
