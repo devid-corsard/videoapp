@@ -1,9 +1,15 @@
-import React from 'react';
+import React, { useState } from 'react';
 import styled from 'styled-components';
 import AccountCircleOutlinedIcon from '@mui/icons-material/AccountCircleOutlined';
-import { SearchOutlined, VideoCallOutlined } from '@mui/icons-material';
+import {
+  ExitToAppOutlined,
+  SearchOutlined,
+  VideoCallOutlined,
+} from '@mui/icons-material';
 import { Link } from 'react-router-dom';
-import { useSelector } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
+import { logout } from '../redux/userSlice.js';
+import UserMenu from './UserMenu.jsx';
 
 const Container = styled.div`
   position: sticky;
@@ -63,6 +69,7 @@ const User = styled.div`
   gap: 10px;
   font-weight: 500;
   color: ${({ theme }) => theme.text};
+  cursor: pointer;
 `;
 
 const Avatar = styled.img`
@@ -71,9 +78,18 @@ const Avatar = styled.img`
   border-radius: 50%;
   background-color: green;
 `;
+const AUTOCLOSE_TIMEOUT = 5000;
 
 const Navbar = () => {
   const { currentUser } = useSelector((state) => state.user);
+  const [userMenu, setUserMenu] = useState(false);
+
+  const handleMenuOpen = (e) => {
+    if (!userMenu) {
+      setTimeout(() => setUserMenu(false), AUTOCLOSE_TIMEOUT);
+    }
+    setUserMenu(!userMenu);
+  };
 
   return (
     <Container>
@@ -83,11 +99,14 @@ const Navbar = () => {
           <SearchOutlined />
         </Search>
         {currentUser ? (
-          <User>
-            <VideoCallOutlined />
-            <Avatar />
-            {currentUser.name}
-          </User>
+          <>
+            <User>
+              <VideoCallOutlined />
+              <Avatar src={currentUser.img} onClick={handleMenuOpen} />
+              {currentUser.name}
+            </User>
+            {userMenu && <UserMenu setUserMenu={setUserMenu} />}
+          </>
         ) : (
           <Link to="signin" style={{ textDecoration: 'none' }}>
             <Button>

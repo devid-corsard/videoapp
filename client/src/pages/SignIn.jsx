@@ -8,7 +8,9 @@ import {
   loginFailure,
   logout,
 } from '../redux/userSlice.js';
-
+import { auth, provider } from '../firebase.js';
+import { signInWithPopup } from 'firebase/auth';
+import { useNavigate } from 'react-router-dom';
 const Container = styled.div`
   display: flex;
   flex-direction: column;
@@ -74,6 +76,7 @@ export const SignIn = () => {
   const [password, setPassword] = useState('');
 
   const dispatch = useDispatch();
+  const navigate = useNavigate();
 
   const handleLogin = async (e) => {
     e.preventDefault();
@@ -85,6 +88,27 @@ export const SignIn = () => {
       dispatch(loginFailure());
     }
   };
+
+  const signInWithGoogle = async () => {
+    dispatch(loginStart());
+    signInWithPopup(auth, provider)
+      .then((res) => {
+        axios
+          .post('/auth/google', {
+            name: res.user.displayName,
+            email: res.user.email,
+            img: res.user.photoURL,
+          })
+          .then((res) => {
+            dispatch(loginSuccsess(res.data));
+            navigate('/');
+          });
+      })
+      .catch((err) => {
+        dispatch(loginFailure());
+      });
+  };
+
   return (
     <Container>
       <Wrapper>
@@ -100,6 +124,8 @@ export const SignIn = () => {
           onChange={(e) => setPassword(e.target.value)}
         />
         <Button onClick={handleLogin}>Sign in</Button>
+        <Title>or</Title>
+        <Button onClick={signInWithGoogle}>Sign in with Google</Button>
         <Title>or</Title>
         <Input
           placeholder="User name"

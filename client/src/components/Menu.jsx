@@ -108,7 +108,7 @@ const Menu = ({ darkMode, setDarkMode }) => {
           </Item>
         </Link>
         <Link
-          to="subsciptions"
+          to="subscriptions"
           style={{ textDecoration: 'none', color: 'inherit' }}
         >
           <Item>

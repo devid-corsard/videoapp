@@ -4,10 +4,19 @@ import {
   ThumbDownOffAltOutlined,
   ThumbUpAltOutlined,
 } from '@mui/icons-material';
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import styled from 'styled-components';
 import Card from '../components/Card';
 import Comments from '../components/Comments';
+import { useSelector, useDispatch } from 'react-redux';
+import { useLocation } from 'react-router-dom';
+import axios from 'axios';
+import {
+  fetchSuccsess,
+  fetchFailure,
+  fetchStart,
+} from '../redux/videoSlice.js';
+import TimeAgo from 'timeago-react';
 
 const Container = styled.div`
   display: flex;
@@ -108,11 +117,38 @@ const Recomendations = styled.div`
 `;
 
 const Video = () => {
+  const { currentUser } = useSelector((state) => state.user);
+  const { currentVideo } = useSelector((state) => state.video);
+
+  const dispatch = useDispatch();
+  const path = useLocation().pathname.split('/')[2];
+
+  const [channel, setChannel] = useState({});
+
+  useEffect(() => {
+    dispatch(fetchStart());
+    const fetchData = async () => {
+      try {
+        const videoRes = await axios.get(`/videos/find/${path}`);
+        const channelRes = await axios.get(
+          `/users/find/${videoRes.data.userId}`
+        );
+
+        setChannel(channelRes.data);
+        dispatch(fetchSuccsess(videoRes.data));
+      } catch (err) {
+        dispatch(fetchFailure());
+      }
+    };
+
+    fetchData();
+  }, [path, dispatch]);
+
   return (
     <Container>
       <Content>
         <VideoWrapper>
-          <iframe
+          {/* <iframe
             width="100%"
             height="560"
             src="https://www.youtube.com/embed/tWIlcYXDeis"
@@ -120,15 +156,18 @@ const Video = () => {
             frameborder="0"
             allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
             allowfullscreen
-          ></iframe>
+          ></iframe> */}
         </VideoWrapper>
-        <Title>video title</Title>
+        <Title>{currentVideo.title}</Title>
         <Details>
-          <Info>239K views • 8 days ago</Info>
+          <Info>
+            {currentVideo.views} views •{' '}
+            <TimeAgo datetime={currentVideo.createdAt} />
+          </Info>
           <Buttons>
             <Button>
               <ThumbUpAltOutlined />
-              123
+              {currentVideo.likes?.length}
             </Button>
             <Button>
               <ThumbDownOffAltOutlined />
@@ -147,16 +186,11 @@ const Video = () => {
         <Hr />
         <Channel>
           <ChannelInfo>
-            <Image src="https://yt3.ggpht.com/hcGB-JGcd7qtdV4Z5bUXpT0khAWIn0RDmimZpCVN-IubWeDz9SYX8C9qYi1oRXq5tOZy2aim9yg=s88-c-k-c0x00ffffff-no-rj" />
+            <Image src={channel.img} />
             <ChannelDetails>
-              <ChannelName>Channel name</ChannelName>
-              <ChannelCounter>343K Subscribers</ChannelCounter>
-              <Description>
-                Lorem ipsum dolor sit amet consectetur adipisicing elit. Enim
-                optio aliquid exercitationem necessitatibus repellat sapiente
-                fuga ratione sit, voluptatibus odit quam nemo dolorum accusamus
-                quo ullam atque nostrum illum asperiores.
-              </Description>
+              <ChannelName>{channel.name}</ChannelName>
+              <ChannelCounter>{channel.subscribers} Subscribers</ChannelCounter>
+              <Description>{currentVideo.desc}</Description>
             </ChannelDetails>
           </ChannelInfo>
           <SubscribeButton>SUBSCRIBE</SubscribeButton>
@@ -164,7 +198,7 @@ const Video = () => {
         <Hr />
         <Comments />
       </Content>
-      <Recomendations>
+      {/* <Recomendations>
         <Card type="small" />
         <Card type="small" />
         <Card type="small" />
@@ -176,7 +210,7 @@ const Video = () => {
         <Card type="small" />
         <Card type="small" />
         <Card type="small" />
-      </Recomendations>
+      </Recomendations> */}
     </Container>
   );
 };

@@ -22,7 +22,7 @@ export const userSlice = createSlice({
       state.error = true;
     },
     logout: (state) => {
-      state = { ...initialState };
+      return initialState;
     },
   },
 });
