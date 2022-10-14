@@ -1,5 +1,7 @@
-import React from 'react';
+import { useEffect, useState } from 'react';
 import styled from 'styled-components';
+import axios from 'axios';
+import TimeAgo from 'timeago-react';
 
 const Container = styled.div`
   display: flex;
@@ -35,21 +37,29 @@ const Text = styled.p`
   font-size: 14px;
 `;
 
-export const Comment = () => {
+export const Comment = ({ comment }) => {
+  const [channel, setChannel] = useState({});
+
+  useEffect(() => {
+    const fetchComment = async () => {
+      const res = await axios.get(`/users/find/${comment.userId}`);
+      setChannel(res.data);
+    };
+    fetchComment();
+  }, [comment.userId]);
+
   return (
     <Container>
-      <Avatar src="https://yt3.ggpht.com/hcGB-JGcd7qtdV4Z5bUXpT0khAWIn0RDmimZpCVN-IubWeDz9SYX8C9qYi1oRXq5tOZy2aim9yg=s88-c-k-c0x00ffffff-no-rj" />
+      <Avatar src={channel.img} />
       <Details>
         <Name>
-          John Doe<Time>3 days ago</Time>
+          {channel.name}
+          <Time>
+            <TimeAgo datetime={comment.createdAt} />
+          </Time>
         </Name>
 
-        <Text>
-          Lorem ipsum dolor sit amet consectetur adipisicing elit. Facere, ad
-          esse? Repudiandae temporibus nobis corporis facere vel nostrum
-          inventore, consequatur, sunt porro dolore earum deleniti aliquam optio
-          soluta expedita ad?
-        </Text>
+        <Text>{comment.desc}</Text>
       </Details>
     </Container>
   );

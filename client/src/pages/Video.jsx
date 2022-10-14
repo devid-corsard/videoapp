@@ -1,7 +1,9 @@
 import {
   AddTaskOutlined,
   ReplyOutlined,
+  ThumbDown,
   ThumbDownOffAltOutlined,
+  ThumbUp,
   ThumbUpAltOutlined,
 } from '@mui/icons-material';
 import React, { useEffect, useState } from 'react';
@@ -15,8 +17,12 @@ import {
   fetchSuccsess,
   fetchFailure,
   fetchStart,
+  like,
+  dislike,
 } from '../redux/videoSlice.js';
+import { subscription } from '../redux/userSlice.js';
 import TimeAgo from 'timeago-react';
+import Recommendation from '../components/Recommendation';
 
 const Container = styled.div`
   display: flex;
@@ -110,10 +116,21 @@ const SubscribeButton = styled.button`
   padding: 10px 16px;
   height: max-content;
   cursor: pointer;
+  &&:hover {
+    background-color: #878787;
+    &&:before {
+      content: 'UNSUBSCRIBE';
+    }
+    span {
+      display: none;
+    }
+  }
 `;
 
-const Recomendations = styled.div`
-  flex: 2;
+const VideoFrame = styled.video`
+  max-height: 720px;
+  width: 100%;
+  object-fit: cover;
 `;
 
 const Video = () => {
@@ -144,19 +161,28 @@ const Video = () => {
     fetchData();
   }, [path, dispatch]);
 
+  const handleLike = async () => {
+    await axios.put(`/users/like/${currentVideo._id}`);
+    dispatch(like(currentUser._id));
+  };
+
+  const handleDislike = async () => {
+    await axios.put(`/users/dislike/${currentVideo._id}`);
+    dispatch(dislike(currentUser._id));
+  };
+
+  const handleSub = async () => {
+    currentUser.subscribedUsers.includes(channel._id)
+      ? await axios.put(`/users/unsub/${channel._id}`)
+      : await axios.put(`/users/sub/${channel._id}`);
+    dispatch(subscription(channel._id));
+  };
+
   return (
     <Container>
       <Content>
         <VideoWrapper>
-          {/* <iframe
-            width="100%"
-            height="560"
-            src="https://www.youtube.com/embed/tWIlcYXDeis"
-            title="YouTube video player"
-            frameborder="0"
-            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-            allowfullscreen
-          ></iframe> */}
+          <VideoFrame src={currentVideo.videoUrl} controls />
         </VideoWrapper>
         <Title>{currentVideo.title}</Title>
         <Details>
@@ -165,12 +191,20 @@ const Video = () => {
             <TimeAgo datetime={currentVideo.createdAt} />
           </Info>
           <Buttons>
-            <Button>
-              <ThumbUpAltOutlined />
+            <Button onClick={handleLike}>
+              {currentVideo.likes?.includes(currentUser._id) ? (
+                <ThumbUp />
+              ) : (
+                <ThumbUpAltOutlined />
+              )}
               {currentVideo.likes?.length}
             </Button>
-            <Button>
-              <ThumbDownOffAltOutlined />
+            <Button onClick={handleDislike}>
+              {currentVideo.dislikes?.includes(currentUser._id) ? (
+                <ThumbDown />
+              ) : (
+                <ThumbDownOffAltOutlined />
+              )}
               Dislike
             </Button>
             <Button>
@@ -193,24 +227,18 @@ const Video = () => {
               <Description>{currentVideo.desc}</Description>
             </ChannelDetails>
           </ChannelInfo>
-          <SubscribeButton>SUBSCRIBE</SubscribeButton>
+          <SubscribeButton onClick={handleSub}>
+            {currentUser.subscribedUsers?.includes(channel._id) ? (
+              <span>SUBSCRIBED</span>
+            ) : (
+              <span>SUBSCRIBE</span>
+            )}
+          </SubscribeButton>
         </Channel>
         <Hr />
-        <Comments />
+        <Comments videoId={currentVideo._id} />
       </Content>
-      {/* <Recomendations>
-        <Card type="small" />
-        <Card type="small" />
-        <Card type="small" />
-        <Card type="small" />
-        <Card type="small" />
-        <Card type="small" />
-        <Card type="small" />
-        <Card type="small" />
-        <Card type="small" />
-        <Card type="small" />
-        <Card type="small" />
-      </Recomendations> */}
+      <Recommendation tags={currentVideo.tags} />
     </Container>
   );
 };

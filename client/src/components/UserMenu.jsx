@@ -34,11 +34,11 @@ const Hr = styled.hr`
   border: 0.5px solid ${({ theme }) => theme.soft}; ;
 `;
 
-const UserMenu = ({ setUserMenu }) => {
+const UserMenu = () => {
   const dispatch = useDispatch();
 
   return (
-    <Container onMouseLeave={() => setUserMenu(false)}>
+    <Container>
       <Wrapper>
         <Item onClick={() => dispatch(logout())}>
           <ExitToAppOutlined />

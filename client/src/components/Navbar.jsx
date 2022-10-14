@@ -6,10 +6,11 @@ import {
   SearchOutlined,
   VideoCallOutlined,
 } from '@mui/icons-material';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
 import { logout } from '../redux/userSlice.js';
 import UserMenu from './UserMenu.jsx';
+import Upload from './Upload.jsx';
 
 const Container = styled.div`
   position: sticky;
@@ -39,6 +40,7 @@ const Search = styled.div`
   padding: 5px;
   border: 1px solid ${({ theme }) => theme.soft};
   border-radius: 2px;
+  color: ${({ theme }) => theme.text};
 `;
 
 const Input = styled.input`
@@ -46,8 +48,8 @@ const Input = styled.input`
   background-color: transparent;
   width: 100%;
   outline: none;
-  color: ${({ theme }) => theme.text};
   font-size: 16px;
+  color: ${({ theme }) => theme.text};
 `;
 
 const Button = styled.button`
@@ -78,45 +80,55 @@ const Avatar = styled.img`
   border-radius: 50%;
   background-color: green;
 `;
-const AUTOCLOSE_TIMEOUT = 5000;
 
 const Navbar = () => {
+  const navigate = useNavigate();
   const { currentUser } = useSelector((state) => state.user);
   const [userMenu, setUserMenu] = useState(false);
-
-  const handleMenuOpen = (e) => {
-    if (!userMenu) {
-      setTimeout(() => setUserMenu(false), AUTOCLOSE_TIMEOUT);
-    }
-    setUserMenu(!userMenu);
-  };
+  const [videoUpload, setVideoUpload] = useState(false);
+  const [q, setQ] = useState('');
 
   return (
-    <Container>
-      <Wrapper>
-        <Search>
-          <Input placeholder="Search" />
-          <SearchOutlined />
-        </Search>
-        {currentUser ? (
-          <>
-            <User>
-              <VideoCallOutlined />
-              <Avatar src={currentUser.img} onClick={handleMenuOpen} />
-              {currentUser.name}
-            </User>
-            {userMenu && <UserMenu setUserMenu={setUserMenu} />}
-          </>
-        ) : (
-          <Link to="signin" style={{ textDecoration: 'none' }}>
-            <Button>
-              <AccountCircleOutlinedIcon />
-              SIGN IN
-            </Button>
-          </Link>
-        )}
-      </Wrapper>
-    </Container>
+    <>
+      <Container>
+        <Wrapper>
+          <Search>
+            <Input
+              placeholder="Search"
+              onChange={(e) => setQ(e.target.value)}
+              onKeyDown={(e) => {
+                e.key === 'Enter' && navigate(`/search?q=${q}`);
+              }}
+            />
+            <SearchOutlined
+              onClick={() => navigate(`/search?q=${q}`)}
+              style={{ cursor: 'pointer' }}
+            />
+          </Search>
+          {currentUser ? (
+            <>
+              <User>
+                <VideoCallOutlined onClick={() => setVideoUpload(true)} />
+                <Avatar
+                  src={currentUser.img}
+                  onClick={() => setUserMenu(!userMenu)}
+                />
+                {currentUser.name}
+              </User>
+              {userMenu && <UserMenu />}
+            </>
+          ) : (
+            <Link to="signin" style={{ textDecoration: 'none' }}>
+              <Button>
+                <AccountCircleOutlinedIcon />
+                SIGN IN
+              </Button>
+            </Link>
+          )}
+        </Wrapper>
+      </Container>
+      {videoUpload && <Upload setVideoUpload={setVideoUpload} />}
+    </>
   );
 };
 
