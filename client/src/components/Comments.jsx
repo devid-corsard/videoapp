@@ -29,10 +29,62 @@ const Input = styled.input`
   font-size: 14px;
 `;
 
+const ButtonsWrapper = styled.div`
+  margin: 5px;
+  display: flex;
+  align-items: center;
+  justify-content: right;
+  gap: 10px;
+`;
+
+const CommentButton = styled.button`
+  background-color: #3ea6ff;
+  border: none;
+  border-radius: 3px;
+  padding: 10px 15px;
+  color: black;
+  cursor: pointer;
+  &&:disabled {
+    background-color: #8f8f8f;
+    color: white;
+  }
+`;
+
+const CancelButton = styled.button`
+  background-color: transparent;
+  border: none;
+  border-radius: 3px;
+  padding: 10px 15px;
+  color: ${({ theme }) => theme.textSoft};
+  cursor: pointer;
+`;
+
 const Comments = ({ videoId }) => {
   const { currentUser } = useSelector((state) => state.user);
-
+  const [open, setOpen] = useState(false);
+  const [newComment, setNewComment] = useState('');
   const [comments, setComments] = useState([]);
+
+  const handleCancel = (e) => {
+    setOpen(false);
+    setNewComment('');
+  };
+
+  const handleComment = () => {
+    if (!newComment) return;
+    const postComment = async () => {
+      try {
+        const res = await axios.post('/comments', {
+          videoId,
+          desc: newComment,
+        });
+        setComments([...comments, res.data]);
+        setNewComment('');
+        setOpen(false);
+      } catch (err) {}
+    };
+    postComment();
+  };
 
   useEffect(() => {
     const fetchComments = async () => {
@@ -43,12 +95,26 @@ const Comments = ({ videoId }) => {
     };
     fetchComments();
   }, [videoId]);
+
   return (
     <Container>
       <NewComment>
         <Avatar src={currentUser.img} />
-        <Input placeholder="Add a comment..."></Input>
+        <Input
+          value={newComment}
+          onFocus={() => setOpen(true)}
+          onInput={(e) => setNewComment(e.target.value)}
+          placeholder="Add a comment..."
+        ></Input>
       </NewComment>
+      {open && (
+        <ButtonsWrapper>
+          <CancelButton onClick={handleCancel}>CANCEL</CancelButton>
+          <CommentButton disabled={!newComment} onClick={handleComment}>
+            COMMENT
+          </CommentButton>
+        </ButtonsWrapper>
+      )}
       {comments.map((comment) => (
         <Comment key={comment._id} comment={comment} />
       ))}

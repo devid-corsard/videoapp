@@ -49,7 +49,7 @@ const Input = styled.input`
 `;
 
 const Button = styled.button`
-  background-color: #1a73e8;
+  background-color: #3ea6ff;
   border: none;
   border-radius: 3px;
   padding: 10px 15px;
