@@ -116,7 +116,7 @@ const SubscribeButton = styled.button`
   padding: 10px 16px;
   height: max-content;
   cursor: pointer;
-  &&:hover {
+  /* &&:hover {
     background-color: #878787;
     &&:before {
       content: 'UNSUBSCRIBE';
@@ -124,7 +124,7 @@ const SubscribeButton = styled.button`
     span {
       display: none;
     }
-  }
+  } */
 `;
 
 const VideoFrame = styled.video`
