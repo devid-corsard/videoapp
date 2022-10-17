@@ -1,10 +1,9 @@
 import React from 'react';
 import styled from 'styled-components';
-import { Link } from 'react-router-dom';
-import { useSelector } from 'react-redux';
 import { ExitToAppOutlined } from '@mui/icons-material';
 import { useDispatch } from 'react-redux';
 import { logout } from '../redux/userSlice';
+import axios from 'axios';
 
 const Container = styled.div`
   position: absolute;
@@ -37,10 +36,17 @@ const Hr = styled.hr`
 const UserMenu = () => {
   const dispatch = useDispatch();
 
+  const handleLogout = async () => {
+    try {
+      await axios.get('/auth/logout');
+      dispatch(logout());
+    } catch (err) {}
+  };
+
   return (
     <Container>
       <Wrapper>
-        <Item onClick={() => dispatch(logout())}>
+        <Item onClick={handleLogout}>
           <ExitToAppOutlined />
           Logout
         </Item>

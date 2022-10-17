@@ -84,6 +84,7 @@ export const SignIn = () => {
     try {
       const res = await axios.post('/auth/signin', { name, password });
       dispatch(loginSuccsess(res.data));
+      navigate('/');
     } catch (err) {
       dispatch(loginFailure());
     }

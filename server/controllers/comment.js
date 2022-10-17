@@ -28,6 +28,27 @@ export const deleteComment = async (req, res, next) => {
   }
 };
 
+export const editComment = async (req, res, next) => {
+  try {
+    const comment = await Comment.findById(req.params.id);
+
+    if (req.user.id === comment.userId) {
+      const updatedComment = await Comment.findByIdAndUpdate(
+        req.params.id,
+        {
+          $set: req.body,
+        },
+        { new: true }
+      );
+      res.status(200).json(updatedComment);
+    } else {
+      next(createError(403, 'You can edit only your comments!'));
+    }
+  } catch (err) {
+    next(err);
+  }
+};
+
 export const getComments = async (req, res, next) => {
   try {
     const comments = await Comment.find({ videoId: req.params.videoId });

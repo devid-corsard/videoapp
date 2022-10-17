@@ -182,25 +182,26 @@ const Video = () => {
     <Container>
       <Content>
         <VideoWrapper>
-          <VideoFrame src={currentVideo.videoUrl} controls />
+          <VideoFrame src={currentVideo?.videoUrl} controls />
         </VideoWrapper>
-        <Title>{currentVideo.title}</Title>
+        <Title>{currentVideo?.title}</Title>
         <Details>
           <Info>
-            {currentVideo.views} views •{' '}
-            <TimeAgo datetime={currentVideo.createdAt} />
+            {currentVideo?.views} views •{' '}
+            <TimeAgo datetime={currentVideo?.createdAt} />
           </Info>
           <Buttons>
             <Button onClick={handleLike}>
-              {currentVideo.likes?.includes(currentUser._id) ? (
+              {currentUser && currentVideo?.likes.includes(currentUser._id) ? (
                 <ThumbUp />
               ) : (
                 <ThumbUpAltOutlined />
               )}
-              {currentVideo.likes?.length}
+              {currentVideo?.likes.length}
             </Button>
             <Button onClick={handleDislike}>
-              {currentVideo.dislikes?.includes(currentUser._id) ? (
+              {currentUser &&
+              currentVideo?.dislikes.includes(currentUser._id) ? (
                 <ThumbDown />
               ) : (
                 <ThumbDownOffAltOutlined />
@@ -224,11 +225,11 @@ const Video = () => {
             <ChannelDetails>
               <ChannelName>{channel.name}</ChannelName>
               <ChannelCounter>{channel.subscribers} Subscribers</ChannelCounter>
-              <Description>{currentVideo.desc}</Description>
+              <Description>{currentVideo?.desc}</Description>
             </ChannelDetails>
           </ChannelInfo>
           <SubscribeButton onClick={handleSub}>
-            {currentUser.subscribedUsers?.includes(channel._id) ? (
+            {currentUser?.subscribedUsers.includes(channel._id) ? (
               <span>SUBSCRIBED</span>
             ) : (
               <span>SUBSCRIBE</span>
@@ -236,9 +237,9 @@ const Video = () => {
           </SubscribeButton>
         </Channel>
         <Hr />
-        <Comments videoId={currentVideo._id} />
+        <Comments videoId={currentVideo?._id} />
       </Content>
-      <Recommendation tags={currentVideo.tags} />
+      <Recommendation tags={currentVideo?.tags} />
     </Container>
   );
 };

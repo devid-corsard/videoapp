@@ -3,6 +3,12 @@ import { Comment } from './Comment';
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { useSelector, useDispatch } from 'react-redux';
+import {
+  fetchFailure,
+  fetchStart,
+  fetchSuccsess,
+} from '../redux/commentsSlice.js';
+import { Navigate, useNavigate } from 'react-router-dom';
 
 const Container = styled.div``;
 
@@ -16,6 +22,8 @@ const Avatar = styled.img`
   width: 36px;
   height: 36px;
   border-radius: 50%;
+  border: none;
+  background-color: green;
 `;
 
 const Input = styled.input`
@@ -61,9 +69,13 @@ const CancelButton = styled.button`
 
 const Comments = ({ videoId }) => {
   const { currentUser } = useSelector((state) => state.user);
+  const { currentComments } = useSelector((state) => state.comments);
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+
   const [open, setOpen] = useState(false);
   const [newComment, setNewComment] = useState('');
-  const [comments, setComments] = useState([]);
+  // const [comments, setComments] = useState([]);
 
   const handleCancel = (e) => {
     setOpen(false);
@@ -73,25 +85,33 @@ const Comments = ({ videoId }) => {
   const handleComment = () => {
     if (!newComment) return;
     const postComment = async () => {
+      dispatch(fetchStart());
       try {
         const res = await axios.post('/comments', {
           videoId,
           desc: newComment,
         });
-        setComments([...comments, res.data]);
+        // setComments([...comments, res.data]);
+        dispatch(fetchSuccsess([...currentComments, res.data]));
         setNewComment('');
         setOpen(false);
-      } catch (err) {}
+      } catch (err) {
+        dispatch(fetchFailure());
+      }
     };
     postComment();
   };
 
   useEffect(() => {
     const fetchComments = async () => {
+      dispatch(fetchStart());
       try {
         const res = await axios.get(`/comments/${videoId}`);
-        setComments(res.data);
-      } catch (err) {}
+        dispatch(fetchSuccsess(res.data));
+        // setComments(res.data);
+      } catch (err) {
+        dispatch(fetchFailure());
+      }
     };
     fetchComments();
   }, [videoId]);
@@ -99,10 +119,12 @@ const Comments = ({ videoId }) => {
   return (
     <Container>
       <NewComment>
-        <Avatar src={currentUser.img} />
+        <Avatar src={currentUser?.img} />
         <Input
           value={newComment}
-          onFocus={() => setOpen(true)}
+          onFocus={() => {
+            currentUser ? setOpen(true) : navigate('/signin');
+          }}
           onInput={(e) => setNewComment(e.target.value)}
           placeholder="Add a comment..."
         ></Input>
@@ -115,9 +137,9 @@ const Comments = ({ videoId }) => {
           </CommentButton>
         </ButtonsWrapper>
       )}
-      {comments.map((comment) => (
-        <Comment key={comment._id} comment={comment} />
-      ))}
+      {currentComments
+        .map((comment) => <Comment key={comment._id} comment={comment} />)
+        .reverse()}
     </Container>
   );
 };
