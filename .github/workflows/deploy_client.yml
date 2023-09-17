@@ -30,6 +30,8 @@ jobs:
           cache-dependency-path: './client/yarn.lock'
       - name: Install dependencies
         run: yarn install
+      - name: CReate .env
+        run: echo "REACT_APP_API_KEY=${{ secrets.FIREBASE }}" > .env
       - name: Build
         run: yarn run build
 
