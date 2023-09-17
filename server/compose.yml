@@ -4,15 +4,14 @@ services:
     build:
       context: .
     networks:
-      # - nginx
+      - nginx
       - default
     ports: 
       - 8800:8800
     environment:
       - MONGO=${MONGO}
       - JWT=${JWT}
-# networks:
-#   nginx:
-#     name: nginx-for-all
-#     external: true
-#
+networks:
+  nginx:
+    name: nginx-for-all
+    external: true
