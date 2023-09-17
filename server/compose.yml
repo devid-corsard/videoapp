@@ -1,0 +1,18 @@
+services:
+  youtubeserver:
+    container_name: devidtube-server
+    build:
+      context: .
+    networks:
+      # - nginx
+      - default
+    ports: 
+      - 8800:8800
+    environment:
+      - MONGO=${MONGO}
+      - JWT=${JWT}
+# networks:
+#   nginx:
+#     name: nginx-for-all
+#     external: true
+#
