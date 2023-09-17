@@ -8,6 +8,7 @@ import Home from './pages/Home';
 import Video from './pages/Video';
 import { SignIn } from './pages/SignIn';
 import Search from './pages/Search';
+import axios from 'axios';
 
 const Container = styled.div`
   display: flex;
@@ -20,6 +21,8 @@ const Main = styled.div`
 const Wrapper = styled.div`
   padding: 22px 22px;
 `;
+
+axios.defaults.baseURL = '/api';
 
 function App() {
   const [darkMode, setDarkMode] = useState(true);
