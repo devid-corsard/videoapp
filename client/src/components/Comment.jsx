@@ -4,7 +4,7 @@ import axios from 'axios';
 import TimeAgo from 'timeago-react';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
 import CommentMenu from './CommentMenu';
-import { useSelector, useDispatch } from 'react-redux';
+import { useDispatch } from 'react-redux';
 import { deleteComment, editComment } from '../redux/commentsSlice';
 import ConfirmPopUp from './ConfirmPopUp';
 

@@ -8,7 +8,7 @@ import {
   fetchStart,
   fetchSuccsess,
 } from '../redux/commentsSlice.js';
-import { Navigate, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 
 const Container = styled.div``;
 
@@ -77,7 +77,7 @@ const Comments = ({ videoId }) => {
   const [newComment, setNewComment] = useState('');
   // const [comments, setComments] = useState([]);
 
-  const handleCancel = (e) => {
+  const handleCancel = () => {
     setOpen(false);
     setNewComment('');
   };
@@ -108,7 +108,6 @@ const Comments = ({ videoId }) => {
       try {
         const res = await axios.get(`/comments/${videoId}`);
         dispatch(fetchSuccsess(res.data));
-        // setComments(res.data);
       } catch (err) {
         dispatch(fetchFailure());
       }

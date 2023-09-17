@@ -8,7 +8,7 @@ import {
 } from 'firebase/storage';
 import app from '../firebase';
 import axios from 'axios';
-import { Navigate, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 
 const Container = styled.div`
   width: 100%;
@@ -118,7 +118,9 @@ const Upload = ({ setVideoUpload }) => {
             break;
         }
       },
-      (error) => {},
+      (_error) => {
+        // todo: handle error
+      },
       () => {
         getDownloadURL(uploadTask.snapshot.ref).then((downloadURL) => {
           setInputs((prev) => {

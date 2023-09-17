@@ -8,7 +8,6 @@ import {
 } from '@mui/icons-material';
 import React, { useEffect, useState } from 'react';
 import styled from 'styled-components';
-import Card from '../components/Card';
 import Comments from '../components/Comments';
 import { useSelector, useDispatch } from 'react-redux';
 import { useLocation } from 'react-router-dom';

@@ -2,12 +2,7 @@ import React, { useState } from 'react';
 import styled from 'styled-components';
 import axios from 'axios';
 import { useDispatch } from 'react-redux';
-import {
-  loginStart,
-  loginSuccsess,
-  loginFailure,
-  logout,
-} from '../redux/userSlice.js';
+import { loginStart, loginSuccsess, loginFailure } from '../redux/userSlice.js';
 import { auth, provider } from '../firebase.js';
 import { signInWithPopup } from 'firebase/auth';
 import { useNavigate } from 'react-router-dom';
@@ -121,7 +116,7 @@ export const SignIn = () => {
             navigate('/');
           });
       })
-      .catch((err) => {
+      .catch(() => {
         dispatch(loginFailure());
       });
   };
