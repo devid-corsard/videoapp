@@ -1,4 +1,3 @@
-import mongoose from 'mongoose';
 import User from '../models/User.js';
 import bcrypt from 'bcryptjs';
 import { createError } from '../error.js';
@@ -14,10 +13,15 @@ export const signup = async (req, res, next) => {
     const salt = bcrypt.genSaltSync(10);
     const hash = bcrypt.hashSync(req.body.password, salt);
     const newUser = new User({ ...req.body, password: hash });
-    await newUser.save();
-    res.status(200).json({ message: 'User has been created' });
-  } catch (error) {
-    next(error);
+    const savedUser = await newUser.save();
+    const token = jwt.sign({ id: savedUser._id }, process.env.JWT);
+
+    res
+      .cookie('access_token', token, { httpOnly: true })
+      .status(200)
+      .json(savedUser._doc);
+  } catch (err) {
+    next(err);
   }
 };
 /** Sign in with correct name, password */

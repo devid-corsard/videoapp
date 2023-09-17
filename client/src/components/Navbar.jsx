@@ -1,14 +1,9 @@
 import React, { useState } from 'react';
 import styled from 'styled-components';
 import AccountCircleOutlinedIcon from '@mui/icons-material/AccountCircleOutlined';
-import {
-  ExitToAppOutlined,
-  SearchOutlined,
-  VideoCallOutlined,
-} from '@mui/icons-material';
+import { SearchOutlined, VideoCallOutlined } from '@mui/icons-material';
 import { Link, useNavigate } from 'react-router-dom';
-import { useSelector, useDispatch } from 'react-redux';
-import { logout } from '../redux/userSlice.js';
+import { useSelector } from 'react-redux';
 import UserMenu from './UserMenu.jsx';
 import Upload from './Upload.jsx';
 

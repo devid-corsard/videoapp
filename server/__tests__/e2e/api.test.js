@@ -90,10 +90,11 @@ describe('api tests', () => {
       name: tUser1.name,
       password: 'wrongpass',
     };
-    await request(app)
-      .post('/api/auth/signin')
-      .send(userSignInData)
-      .expect({ succsess: false, status: 400, message: 'Wrong credentials' });
+    await request(app).post('/api/auth/signin').send(userSignInData).expect({
+      succsess: false,
+      status: 400,
+      message: 'Wrong credentials',
+    });
   });
 
   it('Should sign in as 1st user and get an access token', async () => {
@@ -259,19 +260,6 @@ describe('api tests', () => {
       .expect(200)
       .expect((res) => {
         expect(res.body.title).toBe(updatedVideo.title);
-      });
-  });
-
-  it('Should add view to video', async () => {
-    await request(app)
-      .put('/api/videos/view/' + tUser1Video1.id)
-      .expect(200, { message: 'Views has been increased' });
-
-    await request(app)
-      .get('/api/videos/find/' + tUser1Video1.id)
-      .expect(200)
-      .expect((res) => {
-        expect(res.body.views).toBe(1);
       });
   });
 

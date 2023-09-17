@@ -2,12 +2,7 @@ import React, { useState } from 'react';
 import styled from 'styled-components';
 import axios from 'axios';
 import { useDispatch } from 'react-redux';
-import {
-  loginStart,
-  loginSuccsess,
-  loginFailure,
-  logout,
-} from '../redux/userSlice.js';
+import { loginStart, loginSuccsess, loginFailure } from '../redux/userSlice.js';
 import { auth, provider } from '../firebase.js';
 import { signInWithPopup } from 'firebase/auth';
 import { useNavigate } from 'react-router-dom';
@@ -78,11 +73,27 @@ export const SignIn = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
-  const handleLogin = async (e) => {
+  const handleSignIn = async (e) => {
     e.preventDefault();
     dispatch(loginStart());
     try {
       const res = await axios.post('/auth/signin', { name, password });
+      dispatch(loginSuccsess(res.data));
+      navigate('/');
+    } catch (err) {
+      dispatch(loginFailure());
+    }
+  };
+
+  const handleSignUp = async (e) => {
+    e.preventDefault();
+    dispatch(loginStart());
+    try {
+      const res = await axios.post('/auth/signup', {
+        name,
+        password,
+        email,
+      });
       dispatch(loginSuccsess(res.data));
       navigate('/');
     } catch (err) {
@@ -105,7 +116,7 @@ export const SignIn = () => {
             navigate('/');
           });
       })
-      .catch((err) => {
+      .catch(() => {
         dispatch(loginFailure());
       });
   };
@@ -124,7 +135,7 @@ export const SignIn = () => {
           placeholder="password"
           onChange={(e) => setPassword(e.target.value)}
         />
-        <Button onClick={handleLogin}>Sign in</Button>
+        <Button onClick={handleSignIn}>Sign in</Button>
         <Title>or</Title>
         <Button onClick={signInWithGoogle}>Sign in with Google</Button>
         <Title>or</Title>
@@ -142,7 +153,7 @@ export const SignIn = () => {
           placeholder="Password"
           onChange={(e) => setPassword(e.target.value)}
         />
-        <Button>Sign up</Button>
+        <Button onClick={handleSignUp}>Sign up</Button>
       </Wrapper>
       <More>
         English (USA)
