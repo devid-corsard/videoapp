@@ -4,9 +4,9 @@ import Card from '../components/Card';
 import axios from 'axios';
 
 const Container = styled.div`
-  display: flex;
-  justify-content: space-between;
-  flex-wrap: wrap;
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr 1fr;
+  gap: 1rem;
 `;
 
 const Home = ({ type }) => {

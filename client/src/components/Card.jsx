@@ -5,7 +5,7 @@ import axios from 'axios';
 import TimeAgo from 'timeago-react';
 
 const Container = styled.div`
-  width: ${({ type }) => type !== 'small' && '340px'};
+  max-width: ${({ type }) => type !== 'small' && '340px'};
   margin-bottom: ${({ type }) => (type === 'small' ? '10px' : '45px')};
   cursor: pointer;
   display: ${({ type }) => type === 'small' && 'flex'};
@@ -14,8 +14,10 @@ const Container = styled.div`
 
 const Image = styled.img`
   /* width: max-content; */
+  object-fit: cover;
   width: 100%;
-  height: ${({ type }) => (type === 'small' ? '120px' : '200px')};
+  aspect-ratio: 16 / 9;
+  max-height: ${({ type }) => (type === 'small' ? '120px' : '200px')};
   background-color: gray;
   flex: 1;
 `;
