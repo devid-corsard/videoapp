@@ -15,7 +15,7 @@ export const app = express();
 const connect = () => {
   mongoose
     .connect(process.env.MONGO)
-    .then((a) => console.log('Connected to DB'))
+    .then(() => console.log('Connected to DB'))
     .catch((err) => {
       throw err;
     });
@@ -27,7 +27,7 @@ app.use('/api/auth', authRoutes);
 app.use('/api/users', userRoutes);
 app.use('/api/videos', videoRoutes);
 app.use('/api/comments', commentRoutes);
-app.use((err, res, req, next) => {
+app.use((err, _res, req, _next) => {
   const status = err.status || 500;
   const message = err.message || 'Something went wrong';
   req.status(status).json({
@@ -39,5 +39,5 @@ app.use((err, res, req, next) => {
 
 app.listen(port, () => {
   connect();
-  console.log('Connected to server');
+  console.log('Connected to server on port:', port);
 });
