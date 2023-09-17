@@ -113,7 +113,7 @@ const Comments = ({ videoId }) => {
       }
     };
     fetchComments();
-  }, [videoId]);
+  }, [videoId, dispatch]);
 
   return (
     <Container>
