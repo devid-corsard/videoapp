@@ -1,0 +1,44 @@
+name: Deploy static
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'client/*'
+      - 'client/**'
+      - 'client/**/*'
+
+  # Allows you to run this workflow manually from the Actions tab
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        shell: bash
+        working-directory: client
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+      - name: Set up Node
+        uses: actions/setup-node@v3
+        with:
+          node-version: 18
+          cache: 'npm'
+          cache-dependency-path: './client/package-lock.json'
+      - name: Install dependencies
+        run: yarn install
+      - name: Build
+        run: yarn run build
+
+      - name: Copy code to server
+        uses: appleboy/scp-action@v0.1.4
+        with:
+          host: ${{ secrets.SERVER_HOST }}
+          username: ${{ secrets.SERVER_USERNAME }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          source: "client/build"
+          target: "~/devidtube"
+          overwrite: true
