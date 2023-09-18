@@ -11,7 +11,8 @@ import Search from './pages/Search';
 import axios from 'axios';
 
 const Container = styled.div`
-  display: flex;
+  display: grid;
+  grid-template-columns: 1fr 7fr;
   background-color: ${({ theme }) => theme.bg};
 `;
 

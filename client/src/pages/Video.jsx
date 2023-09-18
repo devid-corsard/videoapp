@@ -24,12 +24,13 @@ import TimeAgo from 'timeago-react';
 import Recommendation from '../components/Recommendation';
 
 const Container = styled.div`
-  display: flex;
-  gap: 24px;
+  display: grid;
+  grid-template-columns: 3fr 1fr;
+  gap: 1rem;
 `;
 
 const Content = styled.div`
-  flex: 5;
+  /* flex: 5; */
 `;
 
 const VideoWrapper = styled.div``;
@@ -128,7 +129,7 @@ const SubscribeButton = styled.button`
 
 const VideoFrame = styled.video`
   max-height: 720px;
-  width: 100%;
+  max-width: 100%;
   object-fit: cover;
 `;
 

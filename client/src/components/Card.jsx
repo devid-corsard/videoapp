@@ -17,7 +17,7 @@ const Image = styled.img`
   object-fit: cover;
   width: 100%;
   aspect-ratio: 16 / 9;
-  max-height: ${({ type }) => (type === 'small' ? '120px' : '200px')};
+  max-height: ${({ type }) => (type === 'small' ? '80px' : '200px')};
   background-color: gray;
   flex: 1;
 `;

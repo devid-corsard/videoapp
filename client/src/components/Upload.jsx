@@ -15,14 +15,15 @@ const Container = styled.div`
   height: 100%;
   top: 0px;
   left: 0px;
-  position: absolute;
+  position: fixed;
   background-color: #000000aa;
   display: flex;
-  align-items: center;
+  align-items: start;
   justify-content: center;
 `;
 
 const Wrapper = styled.div`
+  margin-top: 4rem;
   width: 600px;
   height: 600px;
   background-color: ${({ theme }) => theme.bgLighter};

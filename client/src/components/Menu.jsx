@@ -23,7 +23,7 @@ import { useSelector } from 'react-redux';
 const Container = styled.div`
   flex: 1;
   background-color: ${({ theme }) => theme.bgLighter};
-  height: 100vh;
+  /* min-height: 100vh; */
   color: ${({ theme }) => theme.text};
   font-size: 14px;
   position: sticky;
@@ -59,7 +59,7 @@ const Item = styled.div`
 
 const Hr = styled.hr`
   margin: 15px 0px;
-  border: 0.5px solid ${({ theme }) => theme.soft}; ;
+  border: 0.5px solid ${({ theme }) => theme.soft};
 `;
 
 const Login = styled.div``;
