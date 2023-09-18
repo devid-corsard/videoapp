@@ -5,6 +5,8 @@
 client part: React, Styled components
 
 server: node, express, mongodb
+
+files handling: firestorage
 #### Live preview at
 https://tube.devidcorsard.pp.ua/
 #### What's working:
